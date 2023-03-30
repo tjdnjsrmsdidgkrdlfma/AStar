@@ -444,10 +444,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0040748a2ea23a34a9abbab6097126a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  g: 0
-  h: 0
-  f: 0
   parent_node: {fileID: 0}
+  g_text: {fileID: 6149670269702566009}
+  h_text: {fileID: 5112929791548142447}
+  f_text: {fileID: 2374880670136638728}
 --- !u!1 &7086628256033713053
 GameObject:
   m_ObjectHideFlags: 0
