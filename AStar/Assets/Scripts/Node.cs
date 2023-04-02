@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using Mono.Cecil;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Node : MonoBehaviour
 {   
@@ -36,7 +36,32 @@ public class Node : MonoBehaviour
         }
     }
 
-    public Node parent_node;
+    Node parent_node;
+    public Node ParentNode
+    {
+        get { return parent_node; }
+        set
+        {
+            parent_node = value;
+
+            if(Mathf.Approximately(transform.position.y + 1, ParentNode.transform.position.y))
+            {
+                sprite_renderer.sprite = up_arrow_image;
+            }
+            else if (Mathf.Approximately(transform.position.y - 1, ParentNode.transform.position.y))
+            {
+                sprite_renderer.sprite = down_arrow_image;
+            }
+            else if (Mathf.Approximately(transform.position.x - 1, ParentNode.transform.position.x))
+            {
+                sprite_renderer.sprite = left_arrow_image;
+            }
+            else if (Mathf.Approximately(transform.position.x + 1, ParentNode.transform.position.x))
+            {
+                sprite_renderer.sprite = right_arrow_image;
+            }
+        }
+    }
 
     [SerializeField] TextMeshPro g_text;
     [SerializeField] TextMeshPro h_text;
@@ -62,13 +87,17 @@ public class Node : MonoBehaviour
                     sprite_renderer.color = Color.red;
                     break;
                 case AStarManager.NodeState.End:
-                    sprite_renderer.color = Color.blue;
+                    sprite_renderer.color = Color.green;
                     break;
             }
         }
     }
 
     SpriteRenderer sprite_renderer;
+    public static Sprite up_arrow_image;
+    public static Sprite down_arrow_image;
+    public static Sprite left_arrow_image;
+    public static Sprite right_arrow_image;
 
     void Awake()
     {
