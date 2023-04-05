@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class AStarManager : MonoBehaviour
@@ -36,6 +37,7 @@ public class AStarManager : MonoBehaviour
     #region 기타
     [Header("기타")]
     [SerializeField] GameObject mouse_position;
+    [SerializeField] TextMeshProUGUI no_route_found;
     #endregion
 
     void Awake()
@@ -99,6 +101,9 @@ public class AStarManager : MonoBehaviour
 
     IEnumerator FindingPath()
     {
+        if (start == null || end == null)
+            yield break;
+
         opened_list.Add(start);
 
         Vector2 node_index = GetIndex(start);
@@ -133,11 +138,20 @@ public class AStarManager : MonoBehaviour
 
         while (true)
         {
-            //열린 목록에 아무 것도 없는 경우 == 시작 노드에서 끝 노드로 가는 길이 없는 경우
             //열린 목록에 끝 노드가 포함되어 있는 경우 == 시작 노드에서 끝 노드로 가는 길을 찾은 경우
-            if (opened_list.Count == 0 || opened_list.Contains(end) == true)
-                break;
+            if (opened_list.Contains(end) == true)
+            {
+                StartCoroutine(RouteFound());
+                yield break;
+            }
 
+            //열린 목록에 아무 것도 없는 경우 == 시작 노드에서 끝 노드로 가는 길이 없는 경우
+            if (opened_list.Count == 0)
+            {
+                StartCoroutine(NoRouteFound());
+                yield break;
+            }
+                
             smallest_f_value_node = opened_list[0];
 
             foreach (Node node in opened_list) //열린 목록에 있는 노드 중 F값이 가장 작은 노드를 검색
@@ -202,6 +216,21 @@ public class AStarManager : MonoBehaviour
             }
         }
 
+        
+    }
+
+    Vector2 GetIndex(Node node)
+    {
+        Vector2 position = node.transform.position;
+
+        position.x = (int)(position.x + (map_size.y / 2));
+        position.y = (int)(position.y + (map_size.x / 2));
+
+        return position;
+    }
+
+    IEnumerator RouteFound()
+    {
         //temp_node 노드의 ParentNode를 Push하고 temp_node의 ParentNode를 temp_node에 대입하고 ParentNode가 start가 아닌 동안 반복
         Stack<Node> node_stack = new Stack<Node>();
         Node temp_node = end;
@@ -218,20 +247,21 @@ public class AStarManager : MonoBehaviour
         while (node_stack.Count > 0)
         {
             temp_node = node_stack.Pop();
-            temp_node.GetComponent<SpriteRenderer>().color = Color.magenta;
+            temp_node.GetComponent<SpriteRenderer>().color = Color.gray;
 
             yield return new WaitForSeconds(0.5f);
         }
     }
 
-    Vector2 GetIndex(Node node)
+    IEnumerator NoRouteFound()
     {
-        Vector2 position = node.transform.position;
+        yield return new WaitForSeconds(0.5f);
 
-        position.x = (int)(position.x + (map_size.y / 2));
-        position.y = (int)(position.y + (map_size.x / 2));
+        no_route_found.enabled = true;
 
-        return position;
+        yield return new WaitForSeconds(3);
+
+        no_route_found.enabled = false;
     }
 
     void SetNodeState()
